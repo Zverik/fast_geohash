@@ -48,9 +48,9 @@ void main() {
   print(geohash.encode(78.220864, 15.643212,  7).toRadixString(2)); // 11101010
   print(geohash.encode(78.220864, 15.643212, 12).toRadixString(2)); // 1110101001101
 
-  final hashes = geohash.forBounds(45.818, 5.9559, 47.8084, 10.4921, 14);
-  print(hashes.map((h) => h.toRadixString(2)));
-  // (111010000001001, 111010000001011, 111010000001000, 111010000001010)
+  final hashes = geohash.forBounds(45.818, 5.9559, 47.8084, 10.4921, 15);
+  print(hashes.map((h) => h.toRadixString(8)));
+  // (164022, 164023, 164026, 164027, 164020, 164021, 164024, 164025)
 }
 ```
 

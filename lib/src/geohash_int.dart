@@ -124,13 +124,3 @@ class GeohashInt extends GeohashBase<int> {
     throw UnimplementedError();
   }
 }
-
-void main() {
-  final geohash = GeohashInt();
-  print(geohash.encode(78.220864, 15.643212, 7).toRadixString(2));
-  print(geohash.encode(78.220864, 15.643212, 12).toRadixString(2));
-
-  final hashes = geohash.forBounds(45.818, 5.9559, 47.8084, 10.4921, 14);
-  print(hashes.length);
-  print(hashes.map((h) => h.toRadixString(2)));
-}
