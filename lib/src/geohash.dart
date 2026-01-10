@@ -1,6 +1,6 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
-import 'dart:math' show cos, pi, acos, sin;
+import 'dart:math' show cos, pi, acos, sin, max, min;
 import 'utils.dart';
 
 abstract class GeohashBase<T> {
@@ -218,7 +218,10 @@ abstract class GeohashBase<T> {
   /// are too many cells covered. To guard against geohashes expanding
   /// around poles, set [latLimit] to cut off processing behind those latitudes.
   List<T> forCircle(double lat, double lon, double radius, int precision,
-      {int limit = 10000, int latLimit = 86, bool precise = false}) {
+      {int limit = 10000,
+      double latLimit = 86,
+      bool asBox = false,
+      bool precise = false}) {
     if (precision > maxPrecision || precision < 1) {
       throw ArgumentError('Precision should be between 1 and $maxPrecision');
     }
@@ -240,29 +243,40 @@ abstract class GeohashBase<T> {
 
     final rRadius = radius / _kEarthRadius;
     final rRadiusSq = rRadius * rRadius;
-    final rLat = lat / 180 * pi;
-    final rLon = lon / 180 * pi;
-    final rLatLimit = latLimit / 180 * pi;
+    final rad = pi / 180;
+    final rLat = lat * rad;
+    final rLon = lon * rad;
+    final rLatLimit = latLimit * rad;
     final cosLat = cos(rLat);
+
+    if (asBox) {
+      // Calculate the boundaries and call another function.
+      double radLon = rRadius / cosLat / rad;
+      double radLat = rRadius / rad;
+
+      return forBounds(max(-latLimit, lat - radLat), lon - radLon,
+          min(latLimit, lat + radLat), lon + radLon, precision);
+    }
 
     final centre = encode(lat, lon, precision);
     final b = bounds(centre); // to not re-encode every geohash
-    final dLat = (b.maxLat - b.minLat) / 180 * pi;
-    final dLon = (b.maxLon - b.minLon) / 180 * pi;
-    final rLeftLon = b.minLon / 180 * pi;
-    final rRightLon = b.maxLon / 180 * pi;
-    final result = <T>[centre];
+    final dLat = (b.maxLat - b.minLat) * rad;
+    final dLon = (b.maxLon - b.minLon) * rad;
+    final rLeftLon = b.minLon * rad;
+    final rRightLon = b.maxLon * rad;
+    final result = <T>[];
 
-    /// We don't start this entire thing when we're already over the limit.
-    if (lat < -latLimit || lat > latLimit) return result;
+    // We don't start this entire thing when we're already over the limit.
+    if (lat < -latLimit || lat > latLimit) return [centre];
 
-    /// Calculates distance **in radians** from the circle centre to the given
-    /// location (also in radians). Returns true if the location is strictly
-    /// inside the radius.
+    // Calculates distance **in radians** from the circle centre to the given
+    // location (also in radians). Returns true if the location is strictly
+    // inside the radius.
     bool inside(double toLat, double toLon) {
       final dy = toLat - rLat;
       if (precise) {
-        return acos(sin(rLon) * sin(toLon) + cos(rLon) * cos(toLon) * cos(dy)) <
+        return acos(sin(rLat) * sin(toLat) +
+                cos(rLat) * cos(toLat) * cos(rLon - toLon)) <
             rRadius;
       } else {
         final dx = (toLon - rLon) * cosLat;
@@ -270,10 +284,13 @@ abstract class GeohashBase<T> {
       }
     }
 
-    /// Starting with the centre geohash (not added to the result), step left
-    /// or right while the distance to the far corner of the geohash bounds
-    /// (baseLat, sideLon) is inside the radius. All angles are in radians.
+    // Starting with the centre geohash (not added to the result), step left
+    // or right while the distance to the far corner of the geohash bounds
+    // (baseLat, sideLon) is inside the radius. All angles are in radians.
     void traverseRow(T geohash, double baseLat) {
+      // Add the central geohash, since we're here because it's inside the radius.
+      result.add(geohash);
+
       // First go left.
       double sideLon = rLeftLon;
       T current = geohash;
@@ -301,21 +318,21 @@ abstract class GeohashBase<T> {
     traverseRow(centre, rLat);
 
     // Go up while we can and also venture left and right.
-    double baseLat = b.maxLat / 180 * pi;
+    double baseLat = b.maxLat * rad;
     T current = centre;
     while (inside(baseLat, rLon) && baseLat < rLatLimit) {
-      baseLat += dLat;
       current = adjacent(current, Direction.north);
       traverseRow(current, baseLat);
+      baseLat += dLat;
     }
 
     // And now go down doing the same thing.
-    baseLat = b.minLat / 180 * pi;
+    baseLat = b.minLat * rad;
     current = centre;
     while (inside(baseLat, rLon) && baseLat > -rLatLimit) {
-      baseLat -= dLat;
       current = adjacent(current, Direction.south);
       traverseRow(current, baseLat);
+      baseLat -= dLat;
     }
 
     return result;
