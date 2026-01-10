@@ -101,7 +101,8 @@ class GeohashInt extends GeohashBase<int> {
 
   /// Returns a single neighbour of the given [geohash] in the [direction].
   /// For diagonal directions, runs the processing twice.
-  int adjacentTodo(int geohash, Direction direction) {
+  @override
+  int adjacent(int geohash, Direction direction) {
     if (geohash == 0) {
       throw ArgumentError('Geohash cannot be empty');
     }
@@ -121,6 +122,25 @@ class GeohashInt extends GeohashBase<int> {
       direction = Direction.east;
     }
 
-    throw UnimplementedError();
+    final isHorizontal =
+        direction == Direction.east || direction == Direction.west;
+    final maxBit = 1 << (geohash.bitLength - 2);
+    int bit = isHorizontal ? 1 : 2;
+    if (geohash.bitLength.isOdd) bit = 3 - bit;
+    final setting = direction == Direction.east || direction == Direction.north;
+
+    while (bit <= maxBit) {
+      if (setting && geohash & bit == 0) break;
+      if (!setting && geohash & bit > 0) break;
+      geohash ^= bit;
+      bit <<= 2;
+    }
+    if (bit <= maxBit) {
+      geohash ^= bit;
+    } else if (!isHorizontal) {
+      throw OutOfWorldBoundsException();
+    }
+
+    return geohash;
   }
 }

@@ -27,4 +27,44 @@ void main() {
           reason: v.toString());
     }
   });
+
+  test('Neighbours', () {
+    expect(geohash.neighbours(4), {
+      Direction.northWest: 7,
+      Direction.north: 5,
+      Direction.northEast: 7,
+      Direction.west: 6,
+      Direction.east: 6,
+    });
+
+    expect(geohash.neighbours(8), {
+      Direction.west: 13,
+      Direction.east: 9,
+      Direction.northWest: 15,
+      Direction.north: 10,
+      Direction.northEast: 11,
+    });
+
+    expect(geohash.neighbours(27), {
+      Direction.northWest: 28,
+      Direction.north: 30,
+      Direction.northEast: 20,
+      Direction.west: 25,
+      Direction.east: 17,
+      Direction.southWest: 24,
+      Direction.south: 26,
+      Direction.southEast: 16,
+    });
+
+    expect(geohash.neighbours(5437), {
+      Direction.northWest: 5474,
+      Direction.north: 5480,
+      Direction.northEast: 5482,
+      Direction.west: 5431,
+      Direction.east: 5439,
+      Direction.southWest: 5430,
+      Direction.south: 5436,
+      Direction.southEast: 5438,
+    });
+  });
 }

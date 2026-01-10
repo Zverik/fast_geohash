@@ -47,11 +47,15 @@ abstract class GeohashBase<T> {
       case Direction.southWest:
         steps = (-1, -1);
     }
-    return encode(
-      (b.minLat + b.maxLat) / 2 + steps.$1 * (b.maxLat - b.minLat),
-      (b.minLon + b.maxLon) / 2 + steps.$2 * (b.maxLon - b.minLon),
-      precision(geohash),
-    );
+    try {
+      return encode(
+        (b.minLat + b.maxLat) / 2 + steps.$1 * (b.maxLat - b.minLat),
+        (b.minLon + b.maxLon) / 2 + steps.$2 * (b.maxLon - b.minLon),
+        precision(geohash),
+      );
+    } on ArgumentError {
+      throw OutOfWorldBoundsException();
+    }
   }
 
   /// Decodes a [geohash] to a (latitude, longitude) record. The result
