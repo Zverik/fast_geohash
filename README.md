@@ -65,3 +65,6 @@ For other hashing algorithms, see:
 * S2: Google's cells, see [s2geometry_dart](https://pub.dev/packages/s2geometry_dart).
 * Hilbert's curves, which are akin to Geohash, but with a better curve:
   [hilbert_geohash](https://pub.dev/packages/hilbert_geohash).
+
+Also thanks to ESP folks for the excellent [geohash browser map](https://esp.info/geohash),
+which I've been using to write tests.

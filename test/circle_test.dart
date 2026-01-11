@@ -54,7 +54,7 @@ void main() {
     expect(geohash.forCircle(30.234375, 80.859375, 60000, 3), hasLength(1));
     expect(geohash.forCircle(30.234375, 80.859375, 70000, 3), hasLength(3));
     expect(geohash.forCircle(30.234375, 80.859375, 80000, 3), hasLength(5));
-    expect(geohash.forCircle(30.234375, 80.859375, 90000, 3), hasLength(9));
+    expect(geohash.forCircle(30.234375, 80.859375, 130000, 3), hasLength(9));
   });
 
   test('Really big', () {
