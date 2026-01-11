@@ -1,6 +1,6 @@
 name: fast_geohash
 description: Fast and robust geohashing library for creating geospatial point indices.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/zverik/fast_geohash
 
 environment:

@@ -15,6 +15,8 @@ This library is built to replace [geohash](https://pub.dev/packages/geohash),
 Unlike other packages, this one is actively used in a popular project, is written
 in pure Dart, made with performance in mind, and does not depend on anything.
 
+Pan and zoom the map in [the interactive demo](https://zverik.github.io/fast_geohash/)!
+
 ## Usage
 
 Import either the string or the integer part of the library. Either contains

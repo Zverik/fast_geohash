@@ -1,7 +1,8 @@
 library;
 
-import 'package:fast_geohash/src/geohash_str.dart';
+import 'src/geohash_str.dart';
 
 export 'src/utils.dart';
+export 'src/geohash_str.dart';
 
 const geohash = GeohashString();

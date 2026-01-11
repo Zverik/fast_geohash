@@ -1,3 +1,5 @@
+import 'dart:math' show min;
+
 import 'package:fast_geohash/fast_geohash_str.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -91,7 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final center = vb.simpleCenter;
     if (makeCircle) {
       final d = DistanceHaversine();
-      final radius = d.distance(center, LatLng(center.latitude, vb.west));
+      final radius = min(
+        d.distance(center, LatLng(center.latitude, vb.west)),
+        d.distance(center, LatLng(vb.south, center.longitude)),
+      );
       circle = (center, radius * 0.7);
       box = null;
     } else {
